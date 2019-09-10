@@ -4,13 +4,13 @@
 
     <groupId>com.10duke.client.jwt</groupId>
     <artifactId>aggregate</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>com.10duke.client.parent</groupId>
         <artifactId>maven</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../parent/maven/pom.xml</relativePath>
     </parent>
 
