@@ -4,13 +4,13 @@
 
     <groupId>com.10duke.client</groupId> 
     <artifactId>build-tools</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>com.10duke.client.parent</groupId>
         <artifactId>maven</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../parent/maven/pom.xml</relativePath>
     </parent>
 

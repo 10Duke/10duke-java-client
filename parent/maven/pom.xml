@@ -4,7 +4,7 @@
 
     <groupId>com.10duke.client.parent</groupId>
     <artifactId>maven</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>com.10duke.client.parent:maven</name>
