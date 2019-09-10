@@ -20,8 +20,8 @@
     
     <developers>
         <developer>
-            <name>10Duke</name>
-            <email>info@10duke.com</email>
+            <name>10Duke Opensource</name>
+            <email>opensource@10duke.com</email>
             <organization>10Duke</organization>
             <organizationUrl>https://www.10duke.com</organizationUrl>
         </developer>
@@ -107,20 +107,21 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <configuration>
+                                    <executable>gpg2</executable>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
-                    <!--
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
                         <configuration>
                             <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
-                    -->
                 </plugins>
             </build>
         </profile>
