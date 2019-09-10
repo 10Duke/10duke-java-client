@@ -4,13 +4,13 @@
 
     <groupId>com.10duke.client</groupId>
     <artifactId>test-utils</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>com.10duke.client.parent</groupId>
         <artifactId>java</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
         <relativePath>../parent/java/pom.xml</relativePath>
     </parent>
 
@@ -25,12 +25,12 @@
         <dependency>
             <groupId>com.10duke.client.json</groupId>
             <artifactId>api</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.10duke.client.jwt</groupId>
             <artifactId>api</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         
         <!-- External dependencies -->
