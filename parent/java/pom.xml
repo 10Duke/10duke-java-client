@@ -179,6 +179,44 @@
                     <version>${xd.maven-enforcer-plugin.version}</version>
                     <executions>
                         <execution>
+                            <id>enforce-ban-duplicate-classes</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <banDuplicateClasses>
+                                        <scopes>
+                                            <scope>compile</scope>
+                                            <scope>provided</scope>
+                                        </scopes>
+                                        <findAllDuplicates>true</findAllDuplicates>
+                                        <ignoreWhenIdentical>true</ignoreWhenIdentical>
+                                    </banDuplicateClasses>
+                                </rules>
+                                <fail>true</fail>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>enforce-banned-dependencies</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <bannedDependencies>
+                                        <excludes>
+                                            <exclude>com.10duke.client:test-utils</exclude>
+                                        </excludes>
+                                        <includes>
+                                            <include>com.10duke.client:test-utils:*:*:test</include>
+                                        </includes>
+                                    </bannedDependencies>
+                                </rules>
+                                <fail>true</fail>
+                            </configuration>
+                        </execution>
+                        <execution>
                             <id>enforce-dependency-convergence</id>
                             <configuration>
                                 <rules>
@@ -227,6 +265,13 @@
                             </goals>
                         </execution>
                     </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>extra-enforcer-rules</artifactId>
+                            <version>1.2</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
