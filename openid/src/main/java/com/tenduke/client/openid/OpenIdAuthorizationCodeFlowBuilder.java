@@ -112,12 +112,24 @@ public class OpenIdAuthorizationCodeFlowBuilder extends AbstractOAuthFlowBuilder
         effectiveScopes.addAll(originalScopes);
 
 
-        final OpenIdAuthorizationCodeRequest request = new OpenIdAuthorizationCodeRequest(
-                config,
-                effectiveParameters,
-                effectiveScopes,
-                getState()
-        );
+        final OpenIdAuthorizationCodeRequest request;
+
+        if (config.isUsePKCE()) {
+            request = new OpenIdAuthorizationCodeRequest(
+                    config,
+                    effectiveParameters,
+                    effectiveScopes,
+                    getState(),
+                    generatePKCECodeVerifier()
+            );
+        } else {
+            request = new OpenIdAuthorizationCodeRequest(
+                    config,
+                    effectiveParameters,
+                    effectiveScopes,
+                    getState()
+            );
+        }
 
         return new OpenIdAuthorizationCodeFlow(
                 request,

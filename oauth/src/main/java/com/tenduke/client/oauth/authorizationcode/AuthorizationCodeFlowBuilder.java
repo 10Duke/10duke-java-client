@@ -17,9 +17,6 @@ import java.util.Random;
  */
 public class AuthorizationCodeFlowBuilder extends AbstractOAuthFlowBuilder<AuthorizationCodeFlowBuilder> {
 
-    /** Length of generated PKCE code verifier in bytes. */
-    private static final int PKCE_CODE_VERIFIER_LENGTH_B = 48;
-
     /** Configuration. */
     private final AuthorizationCodeConfig config;
 
@@ -86,15 +83,6 @@ public class AuthorizationCodeFlowBuilder extends AbstractOAuthFlowBuilder<Autho
                 request,
                 tokenRequestFactory
         );
-    }
-
-    /** Generates PKCE code verifier.
-     *  See RFC 7636.
-     *
-     *  @return the PKCE code verifier
-     */
-    protected String generatePKCECodeVerifier() {
-        return super.generateRandomString(PKCE_CODE_VERIFIER_LENGTH_B);
     }
 
 }

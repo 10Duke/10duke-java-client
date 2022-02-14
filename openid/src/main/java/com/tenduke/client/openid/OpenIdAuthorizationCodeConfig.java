@@ -44,7 +44,41 @@ public class OpenIdAuthorizationCodeConfig extends AuthorizationCodeConfig {
             final String issuer,
             final Key signatureVerificationKey
     ) {
-        super(clientId, authorizationEndpoint, redirectUri, tokenEndpoint, clientSecret);
+        this(
+                clientId,
+                authorizationEndpoint,
+                redirectUri,
+                tokenEndpoint,
+                clientSecret,
+                issuer,
+                signatureVerificationKey,
+                false // PKCE not in use
+        );
+    }
+
+    /**
+     * Constructs new instance.
+     *
+     * @param clientId -
+     * @param authorizationEndpoint -
+     * @param redirectUri -
+     * @param tokenEndpoint -
+     * @param clientSecret -
+     * @param issuer -
+     * @param signatureVerificationKey -
+     * @param usePKCE -
+     */
+    public OpenIdAuthorizationCodeConfig(
+            final String clientId,
+            final URI authorizationEndpoint,
+            final URI redirectUri,
+            final URI tokenEndpoint,
+            final @Nullable String clientSecret,
+            final String issuer,
+            final Key signatureVerificationKey,
+            final boolean usePKCE
+    ) {
+        super(clientId, authorizationEndpoint, redirectUri, tokenEndpoint, clientSecret, usePKCE);
 
         this.issuer = issuer;
         this.signatureVerificationKey = signatureVerificationKey;

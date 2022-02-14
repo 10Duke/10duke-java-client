@@ -25,6 +25,9 @@ public abstract class AbstractOAuthFlowBuilder<B extends AbstractOAuthFlowBuilde
     /** Length of generated state in bytes. */
     private static final int GENERATED_STATE_LENGTH_B = 16;
 
+    /** Length of generated PKCE code verifier in bytes. */
+    private static final int PKCE_CODE_VERIFIER_LENGTH_B = 48;
+
     /** Encodes generated values. */
     private static final Base64.Encoder BASE64 = Base64.getUrlEncoder().withoutPadding();
 
@@ -193,6 +196,15 @@ public abstract class AbstractOAuthFlowBuilder<B extends AbstractOAuthFlowBuilde
         random.nextBytes(randomBytes);
 
         return BASE64.encodeToString(randomBytes);
+    }
+
+        /** Generates PKCE code verifier.
+     *  See RFC 7636.
+     *
+     *  @return the PKCE code verifier
+     */
+    protected String generatePKCECodeVerifier() {
+        return generateRandomString(PKCE_CODE_VERIFIER_LENGTH_B);
     }
 
 }

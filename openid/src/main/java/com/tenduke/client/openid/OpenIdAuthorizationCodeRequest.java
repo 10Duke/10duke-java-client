@@ -10,6 +10,7 @@ package com.tenduke.client.openid;
 import com.tenduke.client.oauth.authorizationcode.AbstractAuthorizationCodeRequest;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * OAuth 2 request for OpenId Connect with Authorization Code flow.
@@ -32,6 +33,25 @@ public class OpenIdAuthorizationCodeRequest extends AbstractAuthorizationCodeReq
             final String state
     ) {
         super(config, parameters, scopes, state);
+    }
+
+    /**
+     * Constructs new instance.
+     *
+     * @param config -
+     * @param parameters -
+     * @param scopes -
+     * @param state -
+     * @param codeVerifier -
+     */
+    public OpenIdAuthorizationCodeRequest(
+            final OpenIdAuthorizationCodeConfig config,
+            final Map<String, String> parameters,
+            final Set<String> scopes,
+            final String state,
+            @Nullable final String codeVerifier
+    ) {
+        super(config, parameters, scopes, state, codeVerifier);
     }
 
 }
