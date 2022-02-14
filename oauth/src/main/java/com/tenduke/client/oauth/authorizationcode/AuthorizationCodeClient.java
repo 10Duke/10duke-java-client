@@ -12,6 +12,8 @@ import com.tenduke.client.json.JsonDeserializer;
 import com.tenduke.client.oauth.OAuthClient;
 import com.tenduke.client.oauth.exceptions.OAuthException;
 import java.net.http.HttpClient;
+import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * Client for initiating Authorization Code flow.
@@ -27,6 +29,9 @@ public class AuthorizationCodeClient implements OAuthClient {
 
     /** Creates token requests. */
     private final AuthorizationCodeTokenRequestFactory tokenRequestFactory;
+
+    /** Random number generator. */
+    private final Random random;
 
     /**
      * Constructs new instance.
@@ -56,7 +61,28 @@ public class AuthorizationCodeClient implements OAuthClient {
             final HttpClient httpClient,
             final JsonDeserializer jsonDeserializer
     ) {
+        this(config, httpClient, jsonDeserializer, new SecureRandom());
+    }
+
+    /**
+     * Constructs new instance.
+     *
+     * <p>
+     * This constructor allows configuring the used components.
+     *
+     * @param config -
+     * @param httpClient -
+     * @param jsonDeserializer -
+     * @param random -
+     */
+    public AuthorizationCodeClient(
+            final AuthorizationCodeConfig config,
+            final HttpClient httpClient,
+            final JsonDeserializer jsonDeserializer,
+            final Random random
+    ) {
         this.config = config;
+        this.random = random;
         this.tokenRequestFactory = new AuthorizationCodeTokenRequestFactory(config, httpClient, jsonDeserializer);
     }
 
@@ -68,7 +94,8 @@ public class AuthorizationCodeClient implements OAuthClient {
     public AuthorizationCodeFlowBuilder request() {
         return new AuthorizationCodeFlowBuilder(
                 config,
-                tokenRequestFactory
+                tokenRequestFactory,
+                random
         );
     }
 

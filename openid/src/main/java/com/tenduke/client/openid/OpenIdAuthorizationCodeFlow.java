@@ -49,7 +49,7 @@ public class OpenIdAuthorizationCodeFlow extends AbstractAuthorizationCodeFlow<
     protected OpenIdAuthorizationCodeResponse exchangeCodeToToken(final String authorizationCode)
             throws InterruptedException, OAuthException {
 
-        final OpenIdAuthorizationCodeResponse response = tokenRequest.create(authorizationCode, state()).call();
+        final OpenIdAuthorizationCodeResponse response = tokenRequest.create(authorizationCode, getRequest()).call();
 
         parsedIdToken.validate(
                 response.getIdToken(),

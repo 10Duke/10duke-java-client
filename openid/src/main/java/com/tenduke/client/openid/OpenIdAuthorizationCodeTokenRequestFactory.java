@@ -18,6 +18,8 @@ import java.net.http.HttpClient;
  *
  */
 public class OpenIdAuthorizationCodeTokenRequestFactory extends AbstractTokenRequestFactory<
+        OpenIdAuthorizationCodeConfig,
+        OpenIdAuthorizationCodeRequest,
         OpenIdAuthorizationCodeResponse,
         OpenIdAuthorizationCodeTokenRequest
         > {

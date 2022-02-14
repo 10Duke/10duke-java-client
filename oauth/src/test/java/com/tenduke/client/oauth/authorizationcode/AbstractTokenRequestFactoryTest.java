@@ -39,7 +39,7 @@ public class AbstractTokenRequestFactoryTest {
         assertThat(factory.requestBody).isEqualTo("grant_type=refresh_token&refresh_token=asdf&client_id=unit-test&client_secret=1-2-3-4-5");
     }
 
-    private static class Impl extends AbstractTokenRequestFactory<AuthorizationCodeResponse, AuthorizationCodeTokenRequest> {
+    private static class Impl extends AbstractTokenRequestFactory<AuthorizationCodeConfig, AuthorizationCodeRequest, AuthorizationCodeResponse, AuthorizationCodeTokenRequest> {
 
         private String requestBody;
 

@@ -23,6 +23,34 @@ public class AuthorizationCodeConfig extends OAuthConfig {
     /** Token endpoint URI. */
     private final URI tokenEndpoint;
 
+    /** PKCE in use? */
+    private boolean usePKCE;
+
+    /**
+     * Constructs new instance.
+     *
+     * @param clientId -
+     * @param authorizationEndpoint -
+     * @param redirectUri -
+     * @param tokenEndpoint -
+     * @param clientSecret -
+     * @param usePKCE should PKCE (RFC 7636) be used?
+     */
+    public AuthorizationCodeConfig(
+            final String clientId,
+            final URI authorizationEndpoint,
+            final URI redirectUri,
+            final URI tokenEndpoint,
+            final @Nullable String clientSecret,
+            final boolean usePKCE
+    ) {
+        super(clientId, authorizationEndpoint, redirectUri);
+
+        this.clientSecret = clientSecret;
+        this.tokenEndpoint = tokenEndpoint;
+        this.usePKCE = usePKCE;
+    }
+
     /**
      * Constructs new instance.
      *
@@ -39,10 +67,14 @@ public class AuthorizationCodeConfig extends OAuthConfig {
             final URI tokenEndpoint,
             final @Nullable String clientSecret
     ) {
-        super(clientId, authorizationEndpoint, redirectUri);
-
-        this.clientSecret = clientSecret;
-        this.tokenEndpoint = tokenEndpoint;
+        this(
+                clientId,
+                authorizationEndpoint,
+                redirectUri,
+                tokenEndpoint,
+                clientSecret,
+                false
+        );
     }
 
     // <editor-fold defaultstate="collapsed" desc="Getters">
@@ -54,6 +86,10 @@ public class AuthorizationCodeConfig extends OAuthConfig {
 
     public URI getTokenEndpoint() {
         return tokenEndpoint;
+    }
+
+    public boolean isUsePKCE() {
+        return usePKCE;
     }
 
     // CSON: JavadocMethod
