@@ -162,11 +162,25 @@
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
                         <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                        <compilerArgs>
-                            <arg>-Xlint:all</arg>
-                            <arg>-Werror</arg>
-                        </compilerArgs>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>default-compile</id>
+                            <configuration>
+                                <compilerArgs>
+                                    <arg>-Xlint:all</arg>
+                                    <arg>-Werror</arg>
+                                </compilerArgs>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>default-testCompile</id>
+                            <configuration>
+                                <compilerArgs>
+                                </compilerArgs>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

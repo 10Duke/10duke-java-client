@@ -67,6 +67,13 @@
         
         <!-- Test dependencies -->
         <dependency>
+            <groupId>com.10duke.client</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>

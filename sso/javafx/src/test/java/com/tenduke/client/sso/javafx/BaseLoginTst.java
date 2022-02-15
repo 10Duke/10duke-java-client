@@ -98,7 +98,8 @@ public class BaseLoginTst extends ApplicationTest {
                                 URI.create(baseUrl + "token"),
                                 "1-2-3-4-5",
                                 "is-sue-r",
-                                null
+                                null,
+                                true // Use PKCE.
                         ),
                         httpClient,
                         new IdTokenParser(jwtParser),

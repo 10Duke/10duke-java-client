@@ -16,10 +16,17 @@ import javax.annotation.Nullable;
 /**
  * Base class for token-request factories.
  *
- * @param <RS> type of the token response
+ * @param <C> type of configuration
+ * @param <RQ> type of request
+ * @param <RS> type of the response
  * @param <TR> type of the token request
  */
-public abstract class AbstractTokenRequestFactory<RS extends AuthorizationCodeResponse, TR extends TokenRequest<RS>> {
+public abstract class AbstractTokenRequestFactory<
+        C extends AuthorizationCodeConfig,
+        RQ extends AbstractAuthorizationCodeRequest<C>,
+        RS extends AuthorizationCodeResponse,
+        TR extends TokenRequest<RS>
+> {
 
     /** Character-set in which the request body is encoded. */
     private final Charset encoding = UTF_8;
@@ -39,20 +46,32 @@ public abstract class AbstractTokenRequestFactory<RS extends AuthorizationCodeRe
     /**
      * Creates new token-request.
      *
+     * <p>
+     * NOTE: This method is deprecated: It does not support PKCE.
+     * Use {@link #create(java.lang.String, com.tenduke.client.oauth.authorizationcode.AbstractAuthorizationCodeRequest) } instead.
+     *
      * @param authorizationCode -
      * @param state -
      * @return -
      */
+    @Deprecated
     public TR create(final String authorizationCode, final String state) {
-        final StringBuilder requestBody = new StringBuilder();
+        return createRequest(buildTokenRequestBody(authorizationCode).toString(), state, getTokenEndpoint());
+    }
 
-        appendParameter(requestBody, "grant_type", "authorization_code");
-        appendParameter(requestBody, "code", authorizationCode);
-        appendParameter(requestBody, "redirect_uri", getRedirectUri());
-        appendParameter(requestBody, "client_id", getClientId());
-        appendParameter(requestBody, "client_secret", getClientSecret());
-
-        return createRequest(requestBody.toString(), state, getTokenEndpoint());
+    /**
+     * Creates new token-request.
+     *
+     * @param authorizationCode -
+     * @param request -
+     * @return -
+     */
+    public TR create(final String authorizationCode, final RQ request) {
+        return createRequest(
+                buildTokenRequestBody(authorizationCode, request).toString(),
+                request.getState(),
+                getTokenEndpoint()
+        );
     }
 
     /**
@@ -71,6 +90,39 @@ public abstract class AbstractTokenRequestFactory<RS extends AuthorizationCodeRe
         appendParameter(requestBody, "client_secret", getClientSecret());
 
         return createRefreshTokenRequest(requestBody.toString(), state, getRefreshTokenEndpoint());
+    }
+
+    /** Builds token request body.
+     *
+     * @param authorizationCode -
+     * @param request -
+     * @return -
+     */
+    protected StringBuilder buildTokenRequestBody(final String authorizationCode, final RQ request) {
+        final StringBuilder requestBody = buildTokenRequestBody(authorizationCode);
+
+        if (request.isPKCERequest()) {
+            appendParameter(requestBody, "code_verifier", request.getCodeVerifier());
+        }
+
+        return requestBody;
+    }
+
+    /** Builds token request body.
+     *
+     * @param authorizationCode -
+     * @return -
+     */
+     protected StringBuilder buildTokenRequestBody(final String authorizationCode) {
+        final StringBuilder requestBody = new StringBuilder();
+
+        appendParameter(requestBody, "grant_type", "authorization_code");
+        appendParameter(requestBody, "code", authorizationCode);
+        appendParameter(requestBody, "redirect_uri", getRedirectUri());
+        appendParameter(requestBody, "client_id", getClientId());
+        appendParameter(requestBody, "client_secret", getClientSecret());
+
+        return requestBody;
     }
 
     /**

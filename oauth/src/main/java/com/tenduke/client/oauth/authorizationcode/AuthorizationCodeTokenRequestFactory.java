@@ -16,9 +16,11 @@ import java.net.http.HttpClient;
  *
  */
 public class AuthorizationCodeTokenRequestFactory extends AbstractTokenRequestFactory<
+        AuthorizationCodeConfig,
+        AuthorizationCodeRequest,
         AuthorizationCodeResponse,
         AuthorizationCodeTokenRequest
-        > {
+> {
 
     /** HTTP-client. */
     private final HttpClient httpClient;

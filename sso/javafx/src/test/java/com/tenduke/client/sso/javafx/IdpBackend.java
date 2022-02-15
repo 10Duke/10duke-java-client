@@ -7,15 +7,26 @@
  */
 package com.tenduke.client.sso.javafx;
 
+import com.tenduke.client.oauth.QueryParser;
+import com.tenduke.client.testutils.ChecksumUtil;
 import java.io.IOException;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IdpBackend implements AutoCloseable {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(IdpBackend.class);
+
     private final MockWebServer server;
+    private String codeChallenge;
 
     public IdpBackend() {
         server = new MockWebServer();
@@ -37,8 +48,35 @@ public class IdpBackend implements AutoCloseable {
         server.start();
     }
 
-    public void verify(final Dialog dialog) {
-        // TODO
+    public void verify(final Dialog dialog) throws InterruptedException {
+        int requestNo = 0;
+        for (final MockResponse response : dialog.responses()) {
+            final RecordedRequest request = server.takeRequest();
+
+            switch (++requestNo) {
+                // First request: Verify and store PKCE code_challenge
+                case 1:
+                    LOGGER.debug("Verifying request #1...");
+                    codeChallenge = request.getRequestUrl().queryParameter("code_challenge");
+                    assertThat(codeChallenge).isNotNull();
+                    assertThat(request.getRequestUrl().queryParameter("code_challenge_method")).isEqualTo("S256");
+                    break;
+
+                // Second request: verify code verifier
+                case 2:
+                    LOGGER.debug("Verifying request #2...");
+                    final String requestBody = request.getBody().readUtf8();
+                    final Map<String, List<String>> parameters = new QueryParser(UTF_8).from(requestBody);
+                    final List<String> codeVerifier = parameters.get("code_verifier");
+
+                    assertThat(codeVerifier).hasSize(1);
+                    assertThat(ChecksumUtil.urlSafeSHA256(codeVerifier.get(0))).isEqualTo(codeChallenge);
+
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public enum Dialog {

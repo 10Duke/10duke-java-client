@@ -46,7 +46,7 @@ public class AuthorizationCodeFlow extends AbstractAuthorizationCodeFlow<
      */
     @Override
     protected AuthorizationCodeResponse exchangeCodeToToken(final String authorizationCode) throws InterruptedException, OAuthException {
-        return tokenRequest.create(authorizationCode, state()).call();
+        return tokenRequest.create(authorizationCode, getRequest()).call();
     }
 
 }

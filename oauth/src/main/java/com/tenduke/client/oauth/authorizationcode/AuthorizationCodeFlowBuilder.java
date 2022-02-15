@@ -60,12 +60,24 @@ public class AuthorizationCodeFlowBuilder extends AbstractOAuthFlowBuilder<Autho
      */
     @Override
     public AuthorizationCodeFlow start() {
-        final AuthorizationCodeRequest request = new AuthorizationCodeRequest(
-                config,
-                getParameters(),
-                getScopes(),
-                getState()
-        );
+        final AuthorizationCodeRequest request;
+
+        if (config.isUsePKCE()) {
+            request = new AuthorizationCodeRequest(
+                    config,
+                    getParameters(),
+                    getScopes(),
+                    getState(),
+                    generatePKCECodeVerifier()
+            );
+        } else {
+            request = new AuthorizationCodeRequest(
+                    config,
+                    getParameters(),
+                    getScopes(),
+                    getState()
+            );
+        }
 
         return new AuthorizationCodeFlow(
                 request,
