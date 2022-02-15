@@ -14,16 +14,17 @@ import com.tenduke.client.openid.OpenIdAuthorizationCodeResponse;
 import com.tenduke.client.sso.LoginRequest;
 import com.tenduke.client.sso.javafx.LoginDialog;
 import com.tenduke.client.sso.javafx.LoginException;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import java.math.BigInteger;
 import java.net.URI;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPublicKey;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javax.annotation.Nullable;
 
 /**
  * Simple demo-controller.
@@ -31,19 +32,28 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public class RootController {
 
+    /** JWKS "n" -part of RSA public key used to validate the ID-token. */
+    private static final String JWKS_PUBLIC_KEY_N = ""
+            + "ywVSSuHKmyNrcT8JArxoIqTuWdCvG2R78p1Osdav8ivjQWqDnjR37tt7L-U-sopV"
+            + "4ka4gUQVi7Ie87l2cJwhsJ6uAQWfp6K7r-H_yH-ak-F8EvcWLFNqRjbvgAu0MqSt"
+            + "16bkZX01AanBca3yioZ-Ihe7DryKSbR1n8IMU7DRUiZzB4c9qdPphmDwxzryaiTk"
+            + "E1QJyXGjpSdvwwIdXE9uXE12zSeR2-CRKWTPZsnRBKpSDdrEwE8nSRW5XmDppnpo"
+            + "Avb6YI7ULtXZN354atbHsC1s-siHsjD7zB__cUzsRtge4YCTOoIs4thirizP3uXg"
+            + "8xJSs1Quie1GvZt0ufwljMQnbBR7Le1ctV7sCZFom4XJGewGpnXQP9TBBpofH1Rh"
+            + "jmBBRyruvbX3xGj2mKpihy6k3FzoxZ580Pv1KGo1CYjLgfXFSmwnq_MJ6bE1wR9r"
+            + "mexOE1b2laWsTbTdpZB4_3mHGQ1yd5w-7ZjOQ1_K0g5FHm5yKK9cJSvQihN_BpGN"
+            + "5YhvwkpjhAhJlF-csLg4DGXl5GxnTfP1ZSUywOP2Da4PzpaghsDJpkBkh6rKDK-m"
+            + "J9v0He1BfvhxIqAjVnurIRZriZ6mXwTM7C9v30IBIgnadgLkyptuj-_1F3Z3m2-I"
+            + "x6uLpZGUQpWVgMcC2uM5kcU6rWjrfEfAVM23axgy7c0"
+            + "";
+
+    /** JWKS "e" -part of RSA public key used to validate the ID-token. */
+    private static final String JWKS_PUBLIC_KEY_E = ""
+            + "AQAB"
+            + "";
+
     /** Login-client. */
     private final OpenIdAuthorizationCodeClient client;
-
-    /** Public key used to validate the ID-token. Provided by 10Duke. */
-    private static final String PUBLIC_KEY = ""
-            + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3oMwV7MpnuEpdDSsW8Fy"
-            + "NXQescT48dgcORAU1LFcZr2XpkpS7oCtlzOmFstC0DVtKjJKxUurufGQ4/0XFNA2"
-            + "InbGk66WL1ir6fAFC04XisiMVgYqrP4AypqE0jIcfcwrJRzKHPkrtrOib4Da7do1"
-            + "nQrsK8p9iXpWMqRDnPpn1fJ9mwxP74jtb7A/4FlrbMZKtud8dK5P6GPxyDUTMDal"
-            + "n/dqQ46uuc4FVVn+Kt+/dZpN2uicy3v9SOhS3oVQDlPyrecYuQ8kblwijFVvIC8A"
-            + "RVef4ppDil5WGO1rkF6CUYOYL3Z8CWLYuW7uPLDMmPMWPBdobATgEn5+DpkPO5MW"
-            + "+QIDAQAB"
-            + "";
 
     /** Current OpenId Connect response, containing e.g.&nbps;access token and refresh token. */
     private @Nullable OpenIdAuthorizationCodeResponse response;
@@ -81,28 +91,22 @@ public class RootController {
      */
     public RootController() throws InvalidKeySpecException, NoSuchAlgorithmException {
 
-        // Build the signature verification key:
-        final byte[] publicKeyBytes = Base64.getDecoder().decode(PUBLIC_KEY);
-
-        final X509EncodedKeySpec spec = new X509EncodedKeySpec(publicKeyBytes);
-        final KeyFactory kf = KeyFactory.getInstance("RSA");
-        final RSAPublicKey publicKey = (RSAPublicKey) kf.generatePublic(spec);
-
         // Configure the client.
         // The values are provided to you by 10Duke
         // The values below are for working demonstration backend.
+        final PublicKey publicKey = createRSAPublicKeyFromJWKS(JWKS_PUBLIC_KEY_N, JWKS_PUBLIC_KEY_E);
 
         // Note that the client is re-usable and can be used e.g. to refresh the access-token
         this.client = new OpenIdAuthorizationCodeClient(
                 new OpenIdAuthorizationCodeConfig(
-                        "javafx-demo",                                          // clientId
-                        URI.create("https://genco.10duke.com/oauth2/authz"),    // authorizationEndpoint
-                        URI.create("http://127.0.0.1:49151/login"),             // redirectURI
-                        URI.create("https://genco.10duke.com/oauth2/access"),   // tokenEndpoint
-                        "open-sesame",                                          // clientSecret
-                        "https://genco.10duke.com",                             // issuer, used to validate the ID-token
-                        publicKey,
-                        true                                                    // ID-token verification key
+                        "javafx-demo",                                              // clientId
+                        URI.create("https://genco.10duke.com/user/oauth20/authz"),  // authorizationEndpoint
+                        URI.create("http://127.0.0.1:49151/login"),                 // redirectURI
+                        URI.create("https://genco.10duke.com/user/oauth20/token"),  // tokenEndpoint
+                        "open-sesame",                                              // clientSecret
+                        "https://genco.10duke.com",                                 // issuer, used to validate the ID-token
+                        publicKey,                                                  // ID-token verification key
+                        true                                                        // use PKCE
                 )
         );
     }
@@ -161,6 +165,29 @@ public class RootController {
         } catch (final InterruptedException | OAuthException e) {
             System.out.println("Refresh failed: " + e.getMessage());
         }
+    }
+
+
+    /**
+     * Creates a RSA {@link PublicKey} from JWKS "n" and "e".
+     *
+     * @param n -
+     * @param e -
+     * @return -
+     * @throws InvalidKeySpecException -
+     * @throws NoSuchAlgorithmException -
+     */
+    public static PublicKey createRSAPublicKeyFromJWKS(
+            final String n,
+            final String e
+    ) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        final Base64.Decoder base64 = Base64.getUrlDecoder();
+        final BigInteger modulus = new BigInteger(1, base64.decode(n));
+        final BigInteger exponent = new BigInteger(1, base64.decode(e));
+        final RSAPublicKeySpec keySpec = new RSAPublicKeySpec(modulus, exponent);
+        final KeyFactory kf = KeyFactory.getInstance("RSA");
+
+        return kf.generatePublic(keySpec);
     }
 
 }
