@@ -4,13 +4,13 @@
 
     <groupId>com.10duke.client.sso</groupId>
     <artifactId>javafx-demo</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>com.10duke.client.parent</groupId>
         <artifactId>java</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.1.0</version>
         <relativePath>../../parent/java/pom.xml</relativePath>
     </parent>
 
@@ -25,22 +25,22 @@
         <dependency>
             <groupId>com.10duke.client</groupId>
             <artifactId>openid</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.10duke.client.json</groupId>
             <artifactId>jackson</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.10duke.client.jwt</groupId>
             <artifactId>jjwt</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.10duke.client.sso</groupId>
             <artifactId>javafx</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>1.1.0</version>
         </dependency>
 
         <!-- External dependencies -->
