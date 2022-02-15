@@ -101,7 +101,8 @@ public class RootController {
                         URI.create("https://genco.10duke.com/oauth2/access"),   // tokenEndpoint
                         "open-sesame",                                          // clientSecret
                         "https://genco.10duke.com",                             // issuer, used to validate the ID-token
-                        publicKey                                               // ID-token verification key
+                        publicKey,
+                        true                                                    // ID-token verification key
                 )
         );
     }
