@@ -11,6 +11,7 @@ import com.tenduke.client.json.JsonDeserializationException;
 import com.tenduke.client.json.JsonDeserializer;
 import com.tenduke.client.oauth.QueryParser;
 import com.tenduke.client.oauth.exceptions.OAuthException;
+import com.tenduke.client.testutils.ChecksumUtil;
 import com.tenduke.client.testutils.HttpClientTestUtil;
 import java.io.IOException;
 import java.net.URI;
@@ -20,9 +21,6 @@ import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Flow;
@@ -112,7 +110,7 @@ public class AuthorizationCodeClientTest {
                 .hasNoParameter("client_secret")
                 // PKCE_parameters:
                 .hasParameter("code_challenge_method", "S256")
-                .hasParameter("code_challenge", sha256(flow.getRequest().getCodeVerifier()));
+                .hasParameter("code_challenge", ChecksumUtil.urlSafeSHA256(flow.getRequest().getCodeVerifier()));
 
         HttpClientTestUtil.stubHttp(http, "POST", "http://example.com/token", 200, RESPONSE);
 
@@ -226,17 +224,6 @@ public class AuthorizationCodeClientTest {
     @Test
     public void shouldConstructWithOnlyConfig() {
         assertThat(new AuthorizationCodeClient(config).request()).isNotNull();
-    }
-
-
-    private String sha256(final String str) {
-        try {
-            return Base64.getUrlEncoder()
-                    .withoutPadding()
-                    .encodeToString(MessageDigest.getInstance("SHA-256").digest(str.getBytes(UTF_8)));
-        } catch (final NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException("No such algorithm", e);
-        }
     }
 
     private static final String RESPONSE = ""

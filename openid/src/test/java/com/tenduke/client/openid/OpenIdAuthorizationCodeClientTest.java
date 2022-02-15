@@ -12,17 +12,16 @@ import com.tenduke.client.json.JsonDeserializer;
 import com.tenduke.client.jwt.JwtParser;
 import com.tenduke.client.oauth.authorizationcode.AuthorizationCodeResponse;
 import com.tenduke.client.oauth.exceptions.OAuthException;
+import com.tenduke.client.testutils.ChecksumUtil;
 import com.tenduke.client.testutils.HttpClientTestUtil;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import static java.time.ZoneOffset.UTC;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -204,7 +203,7 @@ public class OpenIdAuthorizationCodeClientTest {
                 .hasParameter("nonce", "non-sense")
                 // PKCE
                 .hasParameter("code_challenge_method", "S256")
-                .hasParameter("code_challenge", s256(flow.getRequest().getCodeVerifier()))
+                .hasParameter("code_challenge", ChecksumUtil.urlSafeSHA256(flow.getRequest().getCodeVerifier()))
         ;
 
         HttpClientTestUtil.stubHttp(http, "POST", "http://example.com/token", 200, RESPONSE);
@@ -265,16 +264,6 @@ public class OpenIdAuthorizationCodeClientTest {
     @Test
     public void shouldConstructWithDefaults() {
         assertThat(new OpenIdAuthorizationCodeClient(config).request()).isNotNull();
-    }
-
-    private String s256(final String str) {
-        try {
-            return Base64.getUrlEncoder()
-                    .withoutPadding()
-                    .encodeToString(MessageDigest.getInstance("SHA-256").digest(str.getBytes()));
-        } catch(final  NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException(e);
-        }
     }
 
     private static final String RESPONSE = ""
