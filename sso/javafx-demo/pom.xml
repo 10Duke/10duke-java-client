@@ -57,7 +57,11 @@
             <artifactId>logback-classic</artifactId>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.bitbucket.b_c</groupId>
+            <artifactId>jose4j</artifactId>
+            <version>0.8.0</version>
+        </dependency>
         <!-- External dependencies: OpenJFX -->
         <dependency>
             <groupId>org.openjfx</groupId>

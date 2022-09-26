@@ -25,6 +25,8 @@ import java.util.Base64;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javax.annotation.Nullable;
+import org.jose4j.jwk.HttpsJwks;
+import org.jose4j.jwk.JsonWebKey;
 
 /**
  * Simple demo-controller.
@@ -51,6 +53,9 @@ public class RootController {
     private static final String JWKS_PUBLIC_KEY_E = ""
             + "AQAB"
             + "";
+
+    /** Target IdP. */
+    private static final String TARGET_URL = "https://genco.10duke.com";
 
     /** Login-client. */
     private final OpenIdAuthorizationCodeClient client;
@@ -94,19 +99,29 @@ public class RootController {
         // Configure the client.
         // The values are provided to you by 10Duke
         // The values below are for working demonstration backend.
-        final PublicKey publicKey = createRSAPublicKeyFromJWKS(JWKS_PUBLIC_KEY_N, JWKS_PUBLIC_KEY_E);
+        PublicKey publicKey;
+
+        // Fetch public key from server or use the hard coded value on error.
+        try {
+            final HttpsJwks jwksToken = new HttpsJwks(TARGET_URL + "/.well-known/jwks.json");
+            JsonWebKey firstKey = jwksToken.getJsonWebKeys().get(0);
+            publicKey = (PublicKey) firstKey.getKey();
+        } catch (Exception e) {
+            System.out.println("Unable to fetch jwks, using hard coded values\nError:" + e.getMessage());
+            publicKey = createRSAPublicKeyFromJWKS(JWKS_PUBLIC_KEY_N, JWKS_PUBLIC_KEY_E);
+        }
 
         // Note that the client is re-usable and can be used e.g. to refresh the access-token
         this.client = new OpenIdAuthorizationCodeClient(
                 new OpenIdAuthorizationCodeConfig(
-                        "javafx-demo",                                              // clientId
-                        URI.create("https://genco.10duke.com/user/oauth20/authz"),  // authorizationEndpoint
-                        URI.create("http://127.0.0.1:49151/login"),                 // redirectURI
-                        URI.create("https://genco.10duke.com/user/oauth20/token"),  // tokenEndpoint
-                        "open-sesame",                                              // clientSecret
-                        "https://genco.10duke.com",                                 // issuer, used to validate the ID-token
-                        publicKey,                                                  // ID-token verification key
-                        true                                                        // use PKCE
+                        "javafx-demo",                                      // clientId
+                        URI.create(TARGET_URL + "/user/oauth20/authz"),     // authorizationEndpoint
+                        URI.create("http://127.0.0.1:49151/login"),         // redirectURI
+                        URI.create(TARGET_URL + "/user/oauth20/token"),     // tokenEndpoint
+                        null,                                               // clientSecret
+                        TARGET_URL,                                         // issuer, used to validate the ID-token
+                        publicKey,                                          // ID-token verification key
+                        true                                                // use PKCE
                 )
         );
     }
