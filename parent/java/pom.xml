@@ -35,7 +35,7 @@
         <xd.junit.version>4.13.2</xd.junit.version>
         <xd.mockito.version>2.27.0</xd.mockito.version>
         
-        <xd.checkstyle.version>8.23</xd.checkstyle.version>
+        <xd.checkstyle.version>8.29</xd.checkstyle.version>
         <xd.jacoco-maven-plugin.version>0.8.4</xd.jacoco-maven-plugin.version>
         <xd.license-maven-plugin.version>1.20</xd.license-maven-plugin.version>
         <xd.maven-checkstyle-plugin.version>3.1.0</xd.maven-checkstyle-plugin.version>
