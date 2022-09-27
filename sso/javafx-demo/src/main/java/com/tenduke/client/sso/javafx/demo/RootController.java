@@ -34,7 +34,11 @@ import org.jose4j.jwk.JsonWebKey;
  */
 public class RootController {
 
+    /** 10Duke service base URL. */
+    private static final String BASE_URL = "https://genco.10duke.com";
+
     /** JWKS "n" -part of RSA public key used to validate the ID-token. */
+    // NOTE: This is not needed if the key is fetched from jwks.json.
     private static final String JWKS_PUBLIC_KEY_N = ""
             + "ywVSSuHKmyNrcT8JArxoIqTuWdCvG2R78p1Osdav8ivjQWqDnjR37tt7L-U-sopV"
             + "4ka4gUQVi7Ie87l2cJwhsJ6uAQWfp6K7r-H_yH-ak-F8EvcWLFNqRjbvgAu0MqSt"
@@ -50,12 +54,10 @@ public class RootController {
             + "";
 
     /** JWKS "e" -part of RSA public key used to validate the ID-token. */
+    // NOTE: This is not needed if the key is fetched from jwks.json.
     private static final String JWKS_PUBLIC_KEY_E = ""
             + "AQAB"
             + "";
-
-    /** Target IdP. */
-    private static final String TARGET_URL = "https://genco.10duke.com";
 
     /** Login-client. */
     private final OpenIdAuthorizationCodeClient client;
@@ -103,7 +105,7 @@ public class RootController {
 
         // Fetch public key from server or use the hard coded value on error.
         try {
-            final HttpsJwks jwksToken = new HttpsJwks(TARGET_URL + "/.well-known/jwks.json");
+            final HttpsJwks jwksToken = new HttpsJwks(BASE_URL + "/.well-known/jwks.json");
             JsonWebKey firstKey = jwksToken.getJsonWebKeys().get(0);
             publicKey = (PublicKey) firstKey.getKey();
         } catch (Exception e) {
@@ -115,11 +117,11 @@ public class RootController {
         this.client = new OpenIdAuthorizationCodeClient(
                 new OpenIdAuthorizationCodeConfig(
                         "javafx-demo",                                      // clientId
-                        URI.create(TARGET_URL + "/user/oauth20/authz"),     // authorizationEndpoint
+URI.create(BASE_URL + "/user/oauth20/authz"),     // authorizationEndpoint
                         URI.create("http://127.0.0.1:49151/login"),         // redirectURI
-                        URI.create(TARGET_URL + "/user/oauth20/token"),     // tokenEndpoint
+URI.create(BASE_URL + "/user/oauth20/token"),     // tokenEndpoint
                         null,                                               // clientSecret
-                        TARGET_URL,                                         // issuer, used to validate the ID-token
+                        BASE_URL,                                         // issuer, used to validate the ID-token
                         publicKey,                                          // ID-token verification key
                         true                                                // use PKCE
                 )
