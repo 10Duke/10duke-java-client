@@ -25,6 +25,8 @@ import java.util.Base64;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javax.annotation.Nullable;
+import org.jose4j.jwk.HttpsJwks;
+import org.jose4j.jwk.JsonWebKey;
 
 /**
  * Simple demo-controller.
@@ -32,7 +34,11 @@ import javax.annotation.Nullable;
  */
 public class RootController {
 
+    /** 10Duke service base URL. */
+    private static final String BASE_URL = "https://genco.10duke.com";
+
     /** JWKS "n" -part of RSA public key used to validate the ID-token. */
+    // NOTE: This is not needed if the key is fetched from jwks.json.
     private static final String JWKS_PUBLIC_KEY_N = ""
             + "ywVSSuHKmyNrcT8JArxoIqTuWdCvG2R78p1Osdav8ivjQWqDnjR37tt7L-U-sopV"
             + "4ka4gUQVi7Ie87l2cJwhsJ6uAQWfp6K7r-H_yH-ak-F8EvcWLFNqRjbvgAu0MqSt"
@@ -48,6 +54,7 @@ public class RootController {
             + "";
 
     /** JWKS "e" -part of RSA public key used to validate the ID-token. */
+    // NOTE: This is not needed if the key is fetched from jwks.json.
     private static final String JWKS_PUBLIC_KEY_E = ""
             + "AQAB"
             + "";
@@ -94,19 +101,29 @@ public class RootController {
         // Configure the client.
         // The values are provided to you by 10Duke
         // The values below are for working demonstration backend.
-        final PublicKey publicKey = createRSAPublicKeyFromJWKS(JWKS_PUBLIC_KEY_N, JWKS_PUBLIC_KEY_E);
+        PublicKey publicKey;
+
+        // Fetch public key from server or use the hard coded value on error.
+        try {
+            final HttpsJwks jwksToken = new HttpsJwks(BASE_URL + "/.well-known/jwks.json");
+            JsonWebKey firstKey = jwksToken.getJsonWebKeys().get(0);
+            publicKey = (PublicKey) firstKey.getKey();
+        } catch (Exception e) {
+            System.out.println("Unable to fetch jwks, using hard coded values\nError:" + e.getMessage());
+            publicKey = createRSAPublicKeyFromJWKS(JWKS_PUBLIC_KEY_N, JWKS_PUBLIC_KEY_E);
+        }
 
         // Note that the client is re-usable and can be used e.g. to refresh the access-token
         this.client = new OpenIdAuthorizationCodeClient(
                 new OpenIdAuthorizationCodeConfig(
-                        "javafx-demo",                                              // clientId
-                        URI.create("https://genco.10duke.com/user/oauth20/authz"),  // authorizationEndpoint
-                        URI.create("http://127.0.0.1:49151/login"),                 // redirectURI
-                        URI.create("https://genco.10duke.com/user/oauth20/token"),  // tokenEndpoint
-                        "open-sesame",                                              // clientSecret
-                        "https://genco.10duke.com",                                 // issuer, used to validate the ID-token
-                        publicKey,                                                  // ID-token verification key
-                        true                                                        // use PKCE
+                        "javafx-demo",                                      // clientId
+URI.create(BASE_URL + "/user/oauth20/authz"),     // authorizationEndpoint
+                        URI.create("http://127.0.0.1:49151/login"),         // redirectURI
+URI.create(BASE_URL + "/user/oauth20/token"),     // tokenEndpoint
+                        null,                                               // clientSecret
+                        BASE_URL,                                         // issuer, used to validate the ID-token
+                        publicKey,                                          // ID-token verification key
+                        true                                                // use PKCE
                 )
         );
     }
